@@ -92,4 +92,18 @@ describe "Base" do
       Author.new.posts.size.should == 3
     end
   end
+  
+  describe "belongs_to" do
+    it "should define getter method" do
+      obj = Object.new
+      Post.new(:author_id => obj).author.should == obj
+    end
+    
+    it "should define setter method" do
+      obj = Object.new
+      post = Post.new
+      post.author = obj
+      post.author_id.should == obj
+    end
+  end
 end

@@ -50,7 +50,14 @@ module MotionParse
       end
     end
     
-    
+    def self.belongs_to(association)
+      define_method association do
+        self.send(association.to_s.foreign_key)
+      end
+      define_method "#{association}=" do |val|
+        self.send("#{association.to_s.foreign_key}=", val)
+      end
+    end
     
     def self.query
       PFQuery.alloc.initWithClassName(self.name)

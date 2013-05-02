@@ -56,5 +56,7 @@ class Author < MotionParse::Base
 end
 
 class Post < MotionParse::Base
-  attribute :title, :text
+  attribute :title, :text, :author_id
+  
+  belongs_to :author
 end
