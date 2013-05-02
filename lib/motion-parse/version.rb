@@ -1,0 +1,3 @@
+module MotionParse
+  VERSION = "0.0.1"
+end
