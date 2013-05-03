@@ -7,6 +7,11 @@ describe "Query" do
       PFQuery.last_object.constraints.should == { :foo => 'bar', :baz => 'boom' }
     end
     
+    it "should return self" do
+      query = MotionParse::Query.new(Author)
+      query.where(:foo => 'bar').should == query
+    end
+    
     it "should allow to daisy chain" do
       MotionParse::Query.new(Author).where(:foo => 'bar').where(:baz => 'boom').find
       PFQuery.last_object.constraints.should == { :foo => 'bar', :baz => 'boom' }
@@ -90,6 +95,40 @@ describe "Query" do
     it "should return count immediately when no block given" do
       PFQuery.result_objects = [Author.new(:first_name => 'John')]
       MotionParse::Query.new(Author).where(:foo => 'bar').count.should == 1
+    end
+  end
+  
+  describe "limit" do
+    it "should set limit" do
+      MotionParse::Query.new(Author).limit(10).find
+      PFQuery.last_object.limit.should == 10
+    end
+    
+    it "should return self" do
+      query = MotionParse::Query.new(Author)
+      query.limit(10).should == query
+    end
+    
+    it "should let last call win when daisy chaining limit" do
+      MotionParse::Query.new(Author).limit(5).limit(10).find
+      PFQuery.last_object.limit.should == 10
+    end
+  end
+  
+  describe "offset/skip" do
+    it "should set skip" do
+      MotionParse::Query.new(Author).offset(10).find
+      PFQuery.last_object.skip.should == 10
+    end
+    
+    it "should return self" do
+      query = MotionParse::Query.new(Author)
+      query.skip(10).should == query
+    end
+    
+    it "should let last call win when daisy chaining skip" do
+      MotionParse::Query.new(Author).offset(5).offset(10).find
+      PFQuery.last_object.skip.should == 10
     end
   end
 end

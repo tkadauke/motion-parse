@@ -47,5 +47,16 @@ module MotionParse
         @pf_query.countObjects
       end
     end
+    
+    def limit(num)
+      @pf_query.limit = num
+      self
+    end
+    
+    def offset(num)
+      @pf_query.skip = num
+      self
+    end
+    alias skip offset
   end
 end

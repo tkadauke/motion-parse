@@ -4,6 +4,8 @@ module MotionParse
       attr_reader :constraints
       cattr_accessor :last_object
       cattr_accessor :result_objects
+      
+      attr_accessor :limit, :skip
   
       def initWithClassName(name)
         @constraints = {}

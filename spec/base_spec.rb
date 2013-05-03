@@ -179,4 +179,33 @@ describe "Base" do
       PFQuery.last_object.constraints.should == { :foo => 'bar', :baz => 'boom' }
     end
   end
+  
+  describe "limit" do
+    it "should delegate to query object" do
+      Author.limit(10).find
+      PFQuery.last_object.limit.should == 10
+    end
+    
+    it "should allow daisy chain" do
+      Author.limit(10).where(:foo => 'bar').find
+      PFQuery.last_object.limit.should == 10
+    end
+  end
+  
+  describe "offset/skip" do
+    it "should delegate offset to query object" do
+      Author.offset(10).find
+      PFQuery.last_object.skip.should == 10
+    end
+
+    it "should delegate skip to query object" do
+      Author.skip(10).find
+      PFQuery.last_object.skip.should == 10
+    end
+    
+    it "should allow daisy chain" do
+      Author.offset(10).where(:foo => 'bar').find
+      PFQuery.last_object.skip.should == 10
+    end
+  end
 end

@@ -76,7 +76,7 @@ module MotionParse
     end
     
     class << self
-      delegate :where, :to => :query
+      delegate :where, :limit, :offset, :skip, :to => :query
     end
   end
 end
