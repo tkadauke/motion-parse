@@ -7,7 +7,7 @@ module MotionParse
   
       def initWithClassName(name)
         @constraints = {}
-        PFQuery.last_object = self
+        MotionParse::Mock::PFQuery.last_object = self
         self
       end
   
@@ -15,7 +15,7 @@ module MotionParse
         @constraints[key] = value
       end
   
-      def findObjectsInBackgroundWithBlock(block)
+      def find_in_background(&block)
         block.call(result_objects || [], nil)
       end
   

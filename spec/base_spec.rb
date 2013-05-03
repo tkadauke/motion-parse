@@ -27,6 +27,15 @@ describe "Base" do
       author.first_name = "John"
       author.first_name.should == "John"
     end
+    
+    it "should return a hash with all attributes set to nil when no attributes are set" do
+      Author.new.attributes.should == { :first_name => nil, :last_name => nil, :age => nil }
+    end
+    
+    it "should return a hash of all attributes on instance with all values set" do
+      author = Author.new(:first_name => 'John', :last_name => 'Doe', :age => 10)
+      author.attributes.should == { :first_name => 'John', :last_name => 'Doe', :age => 10 }
+    end
   end
   
   describe "initialize" do
@@ -47,8 +56,16 @@ describe "Base" do
       Author.new(:foo => 'Bar').parse_object.should.not.be.nil
     end
     
-    it "should accept no arg and generage parse object" do
+    it "should accept no arg and generate parse object" do
       Author.new.parse_object.should.not.be.nil
+    end
+    
+    it "should accept MotionParse::Base object and generate parse object" do
+      Author.new(Author.new).parse_object.should.not.be.nil
+    end
+    
+    it "should accept MotionParse::Base object and store values" do
+      Author.new(Author.new(:first_name => 'John')).first_name.should == 'John'
     end
   end
   

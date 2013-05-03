@@ -20,6 +20,11 @@ module MotionParse
     def initialize(arg = nil)
       if arg.is_a?(PFObject)
         @parse_object = arg
+      elsif arg.is_a?(MotionParse::Base)
+        @parse_object = PFObject.objectWithClassName(self.class.name)
+        arg.attributes.each do |key, value|
+          @parse_object.setObject(value, forKey:key) if attributes.include?(key)
+        end
       else
         @parse_object = PFObject.objectWithClassName(self.class.name)
         if arg.is_a?(Hash)
@@ -28,6 +33,10 @@ module MotionParse
           end
         end
       end
+    end
+    
+    def attributes
+      self.class.attributes.inject({}) { |hash, var| hash[var] = send(var); hash }
     end
     
     def self.find(hash, &block)
@@ -65,10 +74,10 @@ module MotionParse
     
     def self.get(query, &block)
       if block
-        query.findObjectsInBackgroundWithBlock(lambda { |objects, error|
+        query.find_in_background do |objects, error|
           objects = objects.map { |obj| new(obj) } if objects
           block.call(objects, error)
-        })
+        end
       else
         query.findObjects.map { |obj| new(obj) }
       end
