@@ -18,9 +18,25 @@ module MotionParse
       def find_in_background(&block)
         block.call(result_objects || [], nil)
       end
+      
+      def first_in_background(&block)
+        block.call(result_objects.first, nil)
+      end
+      
+      def count_in_background(&block)
+        block.call(result_objects.size, nil)
+      end
   
       def findObjects
         result_objects || []
+      end
+      
+      def getFirstObject
+        result_objects.first
+      end
+      
+      def countObjects
+        result_objects.size
       end
     end
   end

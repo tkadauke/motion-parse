@@ -29,5 +29,23 @@ module MotionParse
         @pf_query.findObjects.map { |obj| @owner.new(obj) }
       end
     end
+    
+    def first(&block)
+      if block
+        @pf_query.first_in_background do |object, error|
+          block.call(@owner.new(object), error)
+        end
+      else
+        @owner.new(@pf_query.getFirstObject)
+      end
+    end
+    
+    def count(&block)
+      if block
+        @pf_query.count_in_background(&block)
+      else
+        @pf_query.countObjects
+      end
+    end
   end
 end

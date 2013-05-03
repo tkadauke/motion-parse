@@ -90,6 +90,48 @@ describe "Base" do
     end
   end
   
+  describe "first" do
+    it "should find first with constraints" do
+      Author.first(:foo => 'bar', :baz => 'boom')
+      PFQuery.last_object.constraints.should == { :foo => 'bar', :baz => 'boom' }
+    end
+    
+    it "should call block with result when given" do
+      PFQuery.result_objects = [Author.new(:first_name => 'John')]
+      @result = nil
+      Author.first(:foo => 'bar') do |object|
+        @result = object
+      end
+      @result.first_name.should == 'John'
+    end
+    
+    it "should return result immediately when no block given" do
+      PFQuery.result_objects = [Author.new(:first_name => 'John')]
+      Author.first(:foo => 'bar').first_name.should == 'John'
+    end
+  end
+  
+  describe "count" do
+    it "should count with constraints" do
+      Author.count(:foo => 'bar', :baz => 'boom')
+      PFQuery.last_object.constraints.should == { :foo => 'bar', :baz => 'boom' }
+    end
+    
+    it "should call block with count when given" do
+      PFQuery.result_objects = [Author.new(:first_name => 'John')]
+      @result = nil
+      Author.count(:foo => 'bar') do |num|
+        @result = num
+      end
+      @result.should == 1
+    end
+    
+    it "should return count immediately when no block given" do
+      PFQuery.result_objects = [Author.new(:first_name => 'John')]
+      Author.count(:foo => 'bar').should == 1
+    end
+  end
+  
   describe "has_many" do
     it "should constrain with association" do
       author = Author.new

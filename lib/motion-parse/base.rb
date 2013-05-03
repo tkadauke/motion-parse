@@ -43,6 +43,14 @@ module MotionParse
       where(hash).find(&block)
     end
     
+    def self.first(hash, &block)
+      where(hash).first(&block)
+    end
+    
+    def self.count(hash, &block)
+      where(hash).count(&block)
+    end
+    
     def self.all(&block)
       find({}, &block)
     end

@@ -50,4 +50,46 @@ describe "Query" do
       MotionParse::Query.new(Author).where(:foo => 'bar').find.size.should == 3
     end
   end
+
+  describe "first" do
+    it "should find first with constraints" do
+      MotionParse::Query.new(Author).where(:foo => 'bar', :baz => 'boom').first
+      PFQuery.last_object.constraints.should == { :foo => 'bar', :baz => 'boom' }
+    end
+    
+    it "should call block with results when given" do
+      PFQuery.result_objects = [Author.new(:first_name => 'John')]
+      @result = nil
+      MotionParse::Query.new(Author).where(:foo => 'bar').first do |object|
+        @result = object
+      end
+      @result.first_name.should == 'John'
+    end
+    
+    it "should return models immediately when no block given" do
+      PFQuery.result_objects = [Author.new(:first_name => 'John')]
+      MotionParse::Query.new(Author).where(:foo => 'bar').first.first_name.should == 'John'
+    end
+  end
+
+  describe "count" do
+    it "should count with constraints" do
+      MotionParse::Query.new(Author).where(:foo => 'bar', :baz => 'boom').count
+      PFQuery.last_object.constraints.should == { :foo => 'bar', :baz => 'boom' }
+    end
+    
+    it "should call block with count when given" do
+      PFQuery.result_objects = [Author.new(:first_name => 'John')]
+      @result = nil
+      MotionParse::Query.new(Author).where(:foo => 'bar').count do |num|
+        @result = num
+      end
+      @result.should == 1
+    end
+    
+    it "should return count immediately when no block given" do
+      PFQuery.result_objects = [Author.new(:first_name => 'John')]
+      MotionParse::Query.new(Author).where(:foo => 'bar').count.should == 1
+    end
+  end
 end
