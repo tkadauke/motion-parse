@@ -125,4 +125,16 @@ describe "Base" do
       post.author_id.should == obj
     end
   end
+  
+  describe "where" do
+    it "should delegate to query object" do
+      Author.where(:foo => 'bar', :baz => 'boom').find
+      PFQuery.last_object.constraints.should == { :foo => 'bar', :baz => 'boom' }
+    end
+    
+    it "should allow to daisy chain" do
+      Author.where(:foo => 'bar').where(:baz => 'boom').find
+      PFQuery.last_object.constraints.should == { :foo => 'bar', :baz => 'boom' }
+    end
+  end
 end

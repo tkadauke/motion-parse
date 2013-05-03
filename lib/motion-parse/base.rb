@@ -40,12 +40,7 @@ module MotionParse
     end
     
     def self.find(hash, &block)
-      q = query
-      hash.each do |key, value|
-        q.whereKey(key, equalTo:value)
-      end
-      
-      get(q, &block)
+      where(hash).find(&block)
     end
     
     def self.all(&block)
@@ -55,7 +50,7 @@ module MotionParse
     def self.has_many(association)
       define_method association do |&block|
         klass = association.to_s.classify.constantize
-        klass.find(self.class.name.foreign_key => parse_object, &block)
+        klass.where(self.class.name.foreign_key => parse_object).find(&block)
       end
     end
     
@@ -69,18 +64,11 @@ module MotionParse
     end
     
     def self.query
-      PFQuery.alloc.initWithClassName(self.name)
+      Query.new(self)
     end
     
-    def self.get(query, &block)
-      if block
-        query.find_in_background do |objects, error|
-          objects = objects.map { |obj| new(obj) } if objects
-          block.call(objects, error)
-        end
-      else
-        query.findObjects.map { |obj| new(obj) }
-      end
+    class << self
+      delegate :where, :to => :query
     end
   end
 end
