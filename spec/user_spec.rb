@@ -1,4 +1,6 @@
 describe "User" do
+  extend MotionParse::SpecHelper
+  
   describe "attributes" do
     [:username, :password, :email].each do |attr|
       it "should have #{attr} attribute" do

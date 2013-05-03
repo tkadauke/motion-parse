@@ -1,4 +1,6 @@
 describe "Base" do
+  extend MotionParse::SpecHelper
+  
   describe "attributes" do
     it "should store attributes in class array" do
       Author.attributes.should == [:first_name, :last_name, :age]
