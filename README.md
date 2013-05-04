@@ -11,3 +11,10 @@ Add MotionParse to your Gemfile, like this:
 # Forking
 
 Feel free to fork and submit pull requests!
+
+# TODO
+
+All types of constraints
+Scopes
+Callbacks
+Files
