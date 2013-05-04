@@ -39,15 +39,15 @@ module MotionParse
       self.class.attributes.inject({}) { |hash, var| hash[var] = send(var); hash }
     end
     
-    def self.find(hash, &block)
+    def self.find(hash = {}, &block)
       where(hash).find(&block)
     end
     
-    def self.first(hash, &block)
+    def self.first(hash = {}, &block)
       where(hash).first(&block)
     end
     
-    def self.count(hash, &block)
+    def self.count(hash = {}, &block)
       where(hash).count(&block)
     end
     

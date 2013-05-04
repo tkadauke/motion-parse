@@ -1,5 +1,7 @@
 module MotionParse
   class Query
+    attr_reader :owner
+    
     def initialize(owner)
       @owner = owner
       @pf_query = PFQuery.alloc.initWithClassName(@owner.name)
@@ -21,8 +23,9 @@ module MotionParse
     
     def find(&block)
       if block
+        query = self
         @pf_query.find_in_background do |objects, error|
-          objects = objects.map { |obj| @owner.new(obj) } if objects
+          objects = objects.map { |obj| query.owner.new(obj) } if objects
           block.call(objects, error)
         end
       else
@@ -32,8 +35,9 @@ module MotionParse
     
     def first(&block)
       if block
+        query = self
         @pf_query.first_in_background do |object, error|
-          block.call(@owner.new(object), error)
+          block.call(query.owner.new(object), error)
         end
       else
         @owner.new(@pf_query.getFirstObject)
@@ -42,7 +46,9 @@ module MotionParse
     
     def count(&block)
       if block
-        @pf_query.count_in_background(&block)
+        @pf_query.count_in_background do |result, error|
+          block.call(result, error)
+        end
       else
         @pf_query.countObjects
       end
