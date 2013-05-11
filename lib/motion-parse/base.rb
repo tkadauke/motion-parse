@@ -125,5 +125,17 @@ module MotionParse
         obj.save(at)
       end
     end
+    
+    def refresh(&block)
+      if block
+        this = self
+        @parse_object.refresh_in_background do |object, error|
+          this.parse_object = object
+          block.call(this, error)
+        end
+      else
+        @parse_object.refresh
+      end
+    end
   end
 end

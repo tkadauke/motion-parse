@@ -2,7 +2,7 @@ module MotionParse
   module Mock
     class PFObject
       attr_reader :fields
-      attr_reader :save_at, :delete_at
+      attr_reader :save_at, :delete_at, :refreshed
   
       def self.objectWithClassName(name)
         new
@@ -42,6 +42,14 @@ module MotionParse
       
       def deleteEventually
         @delete_at = :eventually
+      end
+      
+      def refresh_in_background(&block)
+        yield self.class.new
+      end
+      
+      def refresh
+        @refreshed = true
       end
     end
   end

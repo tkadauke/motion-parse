@@ -285,4 +285,21 @@ describe "Base" do
       author.first_name.should == 'John'
     end
   end
+  
+  describe "refresh" do
+    it "should refresh in background" do
+      author = Author.new
+      old_obj = author.parse_object
+      author.refresh do |obj|
+        @refreshed = true
+        old_obj.should.not == author.parse_object
+      end
+    end
+    
+    it "should refresh now" do
+      author = Author.new
+      author.refresh
+      author.parse_object.refreshed.should.be.true
+    end
+  end
 end
