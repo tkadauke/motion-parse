@@ -7,17 +7,108 @@ module MotionParse
       @pf_query = PFQuery.alloc.initWithClassName(@owner.name)
     end
     
-    def where(*args)
-      if args.size == 1 && args.first.is_a?(Hash)
-        args.first.each do |key, value|
-          @pf_query.whereKey(key, equalTo:value)
-        end
-      elsif args.size == 2 && args.first.is_a?(Symbol) && args.last.is_a?(Hash)
-        raise NotImplementedError
-      else
-        raise ArgumentError
+    def where(options = nil)
+      options ? equal(options) : self
+    end
+    
+    def equal(options)
+      options.each do |key, value|
+        @pf_query.whereKey key, equalTo:value
       end
-      
+      self
+    end
+    alias eq equal
+    
+    def not_equal(options)
+      options.each do |key, value|
+        @pf_query.whereKey key, notEqualTo:value
+      end
+      self
+    end
+    alias ne not_equal
+    
+    def less_than(options)
+      options.each do |key, value|
+        @pf_query.whereKey key, lessThan:value
+      end
+      self
+    end
+    alias lt less_than
+    
+    def greater_than(options)
+      options.each do |key, value|
+        @pf_query.whereKey key, greaterThan:value
+      end
+      self
+    end
+    alias gt greater_than
+    
+    def less_than_or_equal(options)
+      options.each do |key, value|
+        @pf_query.whereKey key, lessThanOrEqualTo:value
+      end
+      self
+    end
+    alias lte less_than_or_equal
+    
+    def greater_than_or_equal(options)
+      options.each do |key, value|
+        @pf_query.whereKey key, greaterThanOrEqualTo:value
+      end
+      self
+    end
+    alias gte greater_than_or_equal
+    
+    def contained_in(options)
+      options.each do |key, value|
+        @pf_query.whereKey key, containedIn:value
+      end
+      self
+    end
+    
+    def not_contained_in(options)
+      options.each do |key, value|
+        @pf_query.whereKey key, notContainedIn:value
+      end
+      self
+    end
+    
+    def contains(options)
+      options.each do |key, value|
+        @pf_query.whereKey key, containsAllObjectsInArray:value
+      end
+      self
+    end
+    
+    def matches(options, modifiers = nil)
+      options.each do |key, value|
+        if modifiers
+          @pf_query.whereKey key, matchesRegex:value, modifiers:modifiers
+        else
+          @pf_query.whereKey key, matchesRegex:value
+        end
+      end
+      self
+    end
+    
+    def contains_string(options)
+      options.each do |key, value|
+        @pf_query.whereKey key, containsString:value
+      end
+      self
+    end
+    
+    def has_prefix(options)
+      options.each do |key, value|
+        @pf_query.whereKey key, hasPrefix:value
+      end
+      self
+    end
+    
+    def has_suffix(options)
+      options.each do |key, value|
+        @pf_query.whereKey key, hasSuffix:value
+      end
       self
     end
     

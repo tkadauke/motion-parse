@@ -2,39 +2,39 @@ describe "Query" do
   extend MotionParse::SpecHelper
   
   describe "where" do
-    it "should add constraints if called with hash" do
+    it "should be a no-op when called without an argument" do
+      query = MotionParse::Query.new(Author)
+      query.where.should == query
+    end
+    
+    it "should be a synonym to equals when called with a hash" do
       MotionParse::Query.new(Author).where(:foo => 'bar', :baz => 'boom').find
       PFQuery.last_object.constraints.should == { :foo => 'bar', :baz => 'boom' }
     end
+  end
+  
+  [
+    :equal, :not_equal, :less_than, :greater_than, :less_than_or_equal, :greater_than_or_equal,
+    :contained_in, :not_contained_in, :contains, :matches, :contains_string, :has_prefix, :has_suffix
+  ].each do |method|
+    describe method do
+      it "should add constraints if called with hash" do
+        MotionParse::Query.new(Author).send(method, :foo => 'bar', :baz => 'boom').find
+        PFQuery.last_object.constraints.should == { :foo => 'bar', :baz => 'boom' }
+      end
     
-    it "should return self" do
-      query = MotionParse::Query.new(Author)
-      query.where(:foo => 'bar').should == query
-    end
+      it "should return self" do
+        query = MotionParse::Query.new(Author)
+        query.send(method, :foo => 'bar').should == query
+      end
     
-    it "should allow to daisy chain" do
-      MotionParse::Query.new(Author).where(:foo => 'bar').where(:baz => 'boom').find
-      PFQuery.last_object.constraints.should == { :foo => 'bar', :baz => 'boom' }
-    end
-    
-    it "should raise if called with no arguments" do
-      lambda { MotionParse::Query.new(Author).where }.should.raise ArgumentError
-    end
-    
-    it "should raise if called with one argument that isn't a hash" do
-      lambda { MotionParse::Query.new(Author).where('hello') }.should.raise ArgumentError
-    end
-    
-    it "should raise if called with two arguments that aren't symbol and hash" do
-      lambda { MotionParse::Query.new(Author).where('hello', 'world') }.should.raise ArgumentError
-      lambda { MotionParse::Query.new(Author).where(3, { :foo => 10 }) }.should.raise ArgumentError
-    end
-    
-    it "should raise if called with more than two arguments" do
-      lambda { MotionParse::Query.new(Author).where(:hello, { :world => 'foo' }, 'bar') }.should.raise ArgumentError
+      it "should allow to daisy chain" do
+        MotionParse::Query.new(Author).send(method, :foo => 'bar').send(method, :baz => 'boom').find
+        PFQuery.last_object.constraints.should == { :foo => 'bar', :baz => 'boom' }
+      end
     end
   end
-
+  
   describe "find" do
     it "should find with constraints" do
       MotionParse::Query.new(Author).where(:foo => 'bar', :baz => 'boom').find

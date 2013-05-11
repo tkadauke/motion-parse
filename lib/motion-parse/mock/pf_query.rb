@@ -16,7 +16,55 @@ module MotionParse
       def whereKey(key, equalTo:value)
         @constraints[key] = value
       end
-  
+
+      def whereKey(key, notEqualTo:value)
+        @constraints[key] = value
+      end
+
+      def whereKey(key, lessThan:value)
+        @constraints[key] = value
+      end
+
+      def whereKey(key, greaterThan:value)
+        @constraints[key] = value
+      end
+
+      def whereKey(key, lessThanOrEqualTo:value)
+        @constraints[key] = value
+      end
+
+      def whereKey(key, greaterThanOrEqualTo:value)
+        @constraints[key] = value
+      end
+
+      def whereKey(key, containedIn:value)
+        @constraints[key] = value
+      end
+
+      def whereKey(key, notContainedIn:value)
+        @constraints[key] = value
+      end
+
+      def whereKey(key, containsAllObjectsInArray:value)
+        @constraints[key] = value
+      end
+
+      def whereKey(key, matchesRegex:value)
+        @constraints[key] = value
+      end
+
+      def whereKey(key, containsString:value)
+        @constraints[key] = value
+      end
+
+      def whereKey(key, hasPrefix:value)
+        @constraints[key] = value
+      end
+
+      def whereKey(key, hasSuffix:value)
+        @constraints[key] = value
+      end
+
       def find_in_background(&block)
         block.call(result_objects || [], nil)
       end

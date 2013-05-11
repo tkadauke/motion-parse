@@ -14,7 +14,6 @@ Feel free to fork and submit pull requests!
 
 # TODO
 
-All types of constraints
 Scopes
 Callbacks
 Files
