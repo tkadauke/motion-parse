@@ -4,6 +4,8 @@ module MotionParse
     
     class_attribute :attributes
     self.attributes = []
+    class_attribute :attribute_aliases
+    self.attribute_aliases = {}
     
     def self.attribute(*fields)
       fields.each do |field|
@@ -17,19 +19,31 @@ module MotionParse
       self.attributes += fields
     end
     
+    delegate :createdAt, :createdAt=, :updatedAt, :updatedAt=, :to => :parse_object
+    
+    def self.attr_alias(new_name, old_name)
+      alias_method new_name, old_name
+      alias_method "#{new_name}=", "#{old_name}="
+      self.attribute_aliases = self.attribute_aliases.dup
+      self.attribute_aliases[new_name] = old_name
+    end
+    
+    attr_alias :created_at, :createdAt
+    attr_alias :updated_at, :updatedAt
+    
     def initialize(arg = nil)
       if arg.is_a?(PFObject)
         @parse_object = arg
       elsif arg.is_a?(MotionParse::Base)
         @parse_object = PFObject.objectWithClassName(self.class.name)
         arg.attributes.each do |key, value|
-          @parse_object.setObject(value, forKey:key) if attributes.include?(key)
+          send("#{key}=", value) if respond_to?("#{key}=")
         end
       else
         @parse_object = PFObject.objectWithClassName(self.class.name)
         if arg.is_a?(Hash)
           arg.each do |key, value|
-            @parse_object.setObject(value, forKey:key) if attributes.include?(key)
+            send("#{key}=", value) if respond_to?("#{key}=")
           end
         end
       end
@@ -45,6 +59,10 @@ module MotionParse
     
     def self.first(hash = {}, &block)
       where(hash).first(&block)
+    end
+    
+    def self.last(hash = {}, &block)
+      where(hash).order(:createdAt => :desc).first(&block)
     end
     
     def self.count(hash = {}, &block)
@@ -77,6 +95,35 @@ module MotionParse
     
     class << self
       delegate :where, :limit, :offset, :skip, :to => :query
+    end
+    
+    def save(at = :now)
+      case at
+      when :now
+        @parse_object.save
+      when :later, :background
+        @parse_object.saveInBackground
+      when :eventually
+        @parse_object.saveEventually
+      end
+    end
+    
+    def delete(at = :now)
+      case at
+      when :now
+        @parse_object.delete
+      when :later, :background
+        @parse_object.deleteInBackground
+      when :eventually
+        @parse_object.deleteEventually
+      end
+    end
+    alias destroy delete
+    
+    def self.create(attributes = {}, at = :now)
+      new(attributes).tap do |obj|
+        obj.save(at)
+      end
     end
   end
 end

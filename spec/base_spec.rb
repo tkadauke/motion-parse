@@ -3,7 +3,7 @@ describe "Base" do
   
   describe "attributes" do
     it "should store attributes in class array" do
-      Author.attributes.should == [:first_name, :last_name, :age]
+      Author.attributes.should == MotionParse::Base.attributes + [:first_name, :last_name, :age]
     end
     
     it "should generate reader methods" do
@@ -38,6 +38,27 @@ describe "Base" do
     end
   end
   
+  describe "attr_alias" do
+    it "should have attribute aliases for timestamps by default" do
+      MotionParse::Base.attribute_aliases.should == { :created_at => :createdAt, :updated_at => :updatedAt }
+    end
+    
+    it "should inherit aliases" do
+      Author.attribute_aliases.should == { :created_at => :createdAt, :updated_at => :updatedAt, :name => :last_name }
+    end
+    
+    it "should define alias for reader" do
+      author = Author.new(:last_name => 'John')
+      author.name.should == 'John'
+    end
+    
+    it "should define alias for writer" do
+      author = Author.new(:last_name => 'John')
+      author.name = 'Paul'
+      author.last_name.should == 'Paul'
+    end
+  end
+  
   describe "initialize" do
     it "should accept parse object" do
       obj = PFObject.new
@@ -50,6 +71,10 @@ describe "Base" do
     
     it "should accept hash and store values" do
       Author.new(:first_name => 'John').first_name.should == 'John'
+    end
+    
+    it "should resolve aliases" do
+      Author.new(:name => 'John').last_name.should == 'John'
     end
     
     it "should accept hash with unknown key and generate parse object" do
@@ -206,6 +231,58 @@ describe "Base" do
     it "should allow daisy chain" do
       Author.offset(10).where(:foo => 'bar').find
       PFQuery.last_object.skip.should == 10
+    end
+  end
+  
+  describe "save" do
+    it "should save object now" do
+      author = Author.new(:first_name => 'John')
+      author.save(:now)
+      author.parse_object.save_at.should == :now
+    end
+
+    it "should save object in background" do
+      author = Author.new(:first_name => 'John')
+      author.save(:background)
+      author.parse_object.save_at.should == :background
+    end
+    
+    it "should save object eventually" do
+      author = Author.new(:first_name => 'John')
+      author.save(:eventually)
+      author.parse_object.save_at.should == :eventually
+    end
+  end
+  
+  describe "delete" do
+    it "should delete object now" do
+      author = Author.new
+      author.delete(:now)
+      author.parse_object.delete_at.should == :now
+    end
+
+    it "should delete object in background" do
+      author = Author.new
+      author.delete(:background)
+      author.parse_object.delete_at.should == :background
+    end
+    
+    it "should delete object eventually" do
+      author = Author.new
+      author.delete(:eventually)
+      author.parse_object.delete_at.should == :eventually
+    end
+  end
+  
+  describe "create" do
+    it "should create an object now" do
+      author = Author.create(:first_name => 'John')
+      author.parse_object.save_at.should == :now
+    end
+    
+    it "should set attributes on create" do
+      author = Author.create(:first_name => 'John')
+      author.first_name.should == 'John'
     end
   end
 end

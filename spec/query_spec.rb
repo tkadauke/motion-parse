@@ -15,6 +15,7 @@ describe "Query" do
   
   [
     :equal, :not_equal, :less_than, :greater_than, :less_than_or_equal, :greater_than_or_equal,
+    :eq, :ne, :lt, :gt, :lte, :gte,
     :contained_in, :not_contained_in, :contains, :matches, :contains_string, :has_prefix, :has_suffix
   ].each do |method|
     describe method do
@@ -31,6 +32,11 @@ describe "Query" do
       it "should allow to daisy chain" do
         MotionParse::Query.new(Author).send(method, :foo => 'bar').send(method, :baz => 'boom').find
         PFQuery.last_object.constraints.should == { :foo => 'bar', :baz => 'boom' }
+      end
+      
+      it "should resolve alias" do
+        MotionParse::Query.new(Author).send(method, :created_at => 'today', :updated_at => 'today').find
+        PFQuery.last_object.constraints.should == { :createdAt => 'today', :updatedAt => 'today' }
       end
     end
   end
