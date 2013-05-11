@@ -131,7 +131,8 @@ module MotionParse
           block.call(query.owner.new(object), error)
         end
       else
-        @owner.new(@pf_query.getFirstObject)
+        object = @pf_query.getFirstObject
+        object ? @owner.new(object) : nil
       end
     end
     

@@ -75,6 +75,11 @@ describe "Query" do
       PFQuery.result_objects = [Author.new(:first_name => 'John')]
       MotionParse::Query.new(Author).where(:foo => 'bar').first.first_name.should == 'John'
     end
+    
+    it "should return nil immediately when no block given and nothing is found" do
+      PFQuery.result_objects = []
+      MotionParse::Query.new(Author).where(:foo => 'bar').first.should.be.nil
+    end
   end
 
   describe "count" do
