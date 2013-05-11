@@ -136,4 +136,21 @@ describe "Query" do
       PFQuery.last_object.skip.should == 10
     end
   end
+  
+  describe "order" do
+    it "should add orders if called with hash" do
+      MotionParse::Query.new(Author).order(:name => :asc, :age => :desc).find
+      PFQuery.last_object.order.should == { :name => :asc, :age => :desc }
+    end
+    
+    it "should return self" do
+      query = MotionParse::Query.new(Author)
+      query.order(:name => :asc).should == query
+    end
+    
+    it "should combine order when daisy chaining" do
+      MotionParse::Query.new(Author).order(:name => :asc).order(:age => :desc).find
+      PFQuery.last_object.order.should == { :name => :asc, :age => :desc }
+    end
+  end
 end

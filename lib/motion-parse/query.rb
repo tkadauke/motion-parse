@@ -156,5 +156,25 @@ module MotionParse
       self
     end
     alias skip offset
+    
+    def order(spec)
+      spec.each do |field, dir|
+        if @ordered
+          if dir == :asc
+            @pf_query.addAscendingOrder(field)
+          else
+            @pf_query.addDescendingOrder(field)
+          end
+        else
+          if dir == :asc
+            @pf_query.orderByAscending(field)
+          else
+            @pf_query.orderByDescending(field)
+          end
+          @ordered = true
+        end
+      end
+      self
+    end
   end
 end

@@ -1,7 +1,7 @@
 module MotionParse
   module Mock
     class PFQuery
-      attr_reader :constraints
+      attr_reader :constraints, :order
       cattr_accessor :last_object
       cattr_accessor :result_objects
       
@@ -9,6 +9,7 @@ module MotionParse
   
       def initWithClassName(name)
         @constraints = {}
+        @order = {}
         MotionParse::Mock::PFQuery.last_object = self
         self
       end
@@ -63,6 +64,22 @@ module MotionParse
 
       def whereKey(key, hasSuffix:value)
         @constraints[key] = value
+      end
+      
+      def orderByAscending(field)
+        @order[field] = :asc
+      end
+
+      def orderByDescending(field)
+        @order[field] = :desc
+      end
+
+      def addAscendingOrder(field)
+        @order[field] = :asc
+      end
+
+      def addDescendingOrder(field)
+        @order[field] = :desc
       end
 
       def find_in_background(&block)
