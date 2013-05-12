@@ -15,5 +15,4 @@ Feel free to fork and submit pull requests!
 # TODO
 
 Scopes
-Callbacks
 Files

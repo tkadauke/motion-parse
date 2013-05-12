@@ -1,5 +1,7 @@
 module MotionParse
   class Base
+    include MotionSupport::Callbacks
+    
     attr_accessor :parse_object
     
     class_attribute :attributes
@@ -98,24 +100,28 @@ module MotionParse
     end
     
     def save(at = :now)
-      case at
-      when :now
-        @parse_object.save
-      when :later, :background
-        @parse_object.saveInBackground
-      when :eventually
-        @parse_object.saveEventually
+      run_callbacks :save do
+        case at
+        when :now
+          @parse_object.save
+        when :later, :background
+          @parse_object.saveInBackground
+        when :eventually
+          @parse_object.saveEventually
+        end
       end
     end
     
     def delete(at = :now)
-      case at
-      when :now
-        @parse_object.delete
-      when :later, :background
-        @parse_object.deleteInBackground
-      when :eventually
-        @parse_object.deleteEventually
+      run_callbacks :delete do
+        case at
+        when :now
+          @parse_object.delete
+        when :later, :background
+          @parse_object.deleteInBackground
+        when :eventually
+          @parse_object.deleteEventually
+        end
       end
     end
     alias destroy delete
@@ -136,6 +142,24 @@ module MotionParse
       else
         @parse_object.refresh
       end
+    end
+    
+    define_callbacks :save, :delete
+
+    def self.before_save(*filters, &blk)
+      set_callback(:save, :before, *filters, &blk)
+    end
+
+    def self.after_save(*filters, &blk)
+      set_callback(:save, :after, *filters, &blk)
+    end
+    
+    def self.before_delete(*filters, &blk)
+      set_callback(:delete, :before, *filters, &blk)
+    end
+
+    def self.after_delete(*filters, &blk)
+      set_callback(:delete, :after, *filters, &blk)
     end
   end
 end

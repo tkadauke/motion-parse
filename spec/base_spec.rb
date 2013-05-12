@@ -302,4 +302,18 @@ describe "Base" do
       author.parse_object.refreshed.should.be.true
     end
   end
+  
+  describe "callbacks" do
+    it "should run callbacks when saving" do
+      author = Post.new(:title => 'Hello World')
+      author.save(:now)
+      author.callback_history.should == ["before_save", "after_save"]
+    end
+    
+    it "should run callbacks when deleting" do
+      author = Post.new(:title => 'Hello World')
+      author.delete(:now)
+      author.callback_history.should == ["before_delete", "after_delete"]
+    end
+  end
 end
